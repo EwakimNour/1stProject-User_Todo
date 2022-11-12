@@ -1,0 +1,960 @@
+<html>
+
+<head>
+    <style>
+        #tableuser {
+            position: absolute;
+            left: 100px;
+            top: 50;
+            width: 500px;
+            display: inline;
+
+        }
+
+        #tableHost {
+            width: 500px;
+
+        }
+
+        #tableHostPS {
+            position: absolute;
+            right: 100px;
+            top: 50px;
+            width: 700px;
+            display: inline;
+            font-style: italic;
+        }
+
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #Add {
+            width: 100px;
+        }
+
+        #tableHostnewuser {
+            position: absolute;
+            right: 0px;
+            top: 50px;
+            width: 700px;
+            height: 400px;
+            font-size: 35px;
+        }
+    </style>
+</head>
+
+<body onload="main()">
+    <div id="tableuser">
+        Search<input type="text" id="Search" oninput="search()">
+        <input type="button" id="Add" value="Add" onclick="Addnewuser()">
+        <div id="tableHost"></div>
+    </div>
+    <div id="tableHostnewuser"></div>
+    <div id="tableHostPS"></div>
+    <script>
+        let tableHostEl = document.getElementById('tableHost')
+        let tblEl = document.createElement('table')
+        let tableHostnewuserEl = document.getElementById('tableHostnewuser')
+        let SearchEl = document.getElementById('Search')
+        tableHostEl.appendChild(tblEl)
+        tblEl.border = '1'
+        tableHostnewuserEl.border = "1"
+        let users = []
+        let CheckIfStreetAndCityOnScreen = false
+        let tableHostPSEl = document.getElementById('tableHostPS')
+        tableHostPSEl.border = '1'
+        let Posts = []
+        let Todos = []
+        let useridEl;
+        const fetchdata = async (linkdata) => {
+            const resp = await fetch(linkdata)
+            if (resp.ok) {
+                let data = await resp.json()
+                return data
+            }
+        }
+        const main = async () => {
+            let userdata = `https://jsonplaceholder.typicode.com/users`
+            users = await fetchdata(userdata)
+            let postsdata = `https://jsonplaceholder.typicode.com/posts`
+            Posts = await fetchdata(postsdata)
+            let Todosdata = `https://jsonplaceholder.typicode.com/todos`
+            Todos = await fetchdata(Todosdata)
+            users.forEach(user => {
+                creatEaTableForUser(user)
+            })
+            makeatablefornewuser()
+            maketitlefortodo()
+            maketablefornewtodo()
+            makeAtableforTodos()
+            maketitleforPost()
+            maketablefornewpost()
+            Posts.forEach(post => {
+                makeAtblForPosts(post)
+            })
+        }
+        const makeAtableforTodos = () => {
+            Todos.forEach(todo => {
+                let tbltododiv = document.createElement('table')
+                // tbltododiv.border = '1'
+                tableHostPSEl.appendChild(tbltododiv)
+                // tableHostPSEl.style.borderStyle = 'solid'
+                // tableHostPSEl.style.borderColor = 'black'
+                tbltododiv.style.fontSize = '35px'
+                tbltododiv.style.borderStyle = 'solid'
+                tbltododiv.style.borderColor = 'rgb(200, 144, 253)'
+                tbltododiv.style.width = "650px"
+                tbltododiv.style.margin = "20px"
+                let titletrEl = document.createElement('tr')
+                let titleTextEl = document.createElement('td')
+                let titleEl = document.createElement('td')
+                tbltododiv.appendChild(titletrEl)
+                titletrEl.appendChild(titleTextEl)
+                titletrEl.appendChild(titleEl)
+                titleEl.colSpan = "2"
+                titleTextEl.innerText = "Title"
+                titleEl.innerText = todo.title
+                let CompletedtrEl = document.createElement('tr')
+                let CompletedTextEl = document.createElement('td')
+                let CompletedEl = document.createElement('td')
+                let MarkCompletedEl = document.createElement('td')
+                tbltododiv.appendChild(CompletedtrEl)
+                CompletedtrEl.appendChild(CompletedTextEl)
+                CompletedtrEl.appendChild(CompletedEl)
+                CompletedtrEl.appendChild(MarkCompletedEl)
+                CompletedTextEl.innerText = `Completed`
+                CompletedEl.innerText = todo.completed
+                MarkCompletedEl.innerText = `Mark Comleted`
+                titletrEl.style.border = "none"
+                titleTextEl.style.border = "none"
+                titleEl.style.border = "none"
+                CompletedtrEl.style.border = "none"
+                CompletedTextEl.style.border = "none"
+                CompletedEl.style.border = "none"
+                titleTextEl.style.fontWeight = "900"
+                titleTextEl.style.width = "200px"
+                titleTextEl.style.height = "80px"
+                titleTextEl.style.color = "white"
+                titleTextEl.style.fontSize = "35px"
+                titleEl.style.fontSize = "25px"
+                titleEl.style.textAlign = "left"
+                titleEl.style.width = "500px"
+                CompletedTextEl.style.fontWeight = "900"
+                CompletedtrEl.style.height = "50px"
+                MarkCompletedEl.style.backgroundColor = "rgb(252, 209, 92)"
+                MarkCompletedEl.style.width = '270px'
+                if (todo.completed) {
+                    MarkCompletedEl.style.display = "none"
+                    CompletedEl.style.textAlign = "left"
+                }
+                MarkCompletedEl.onclick = () => {
+                    todo.completed = true
+                    CompletedEl.innerText = "true"
+                    CompletedEl.style.textAlign = "left"
+                    MarkCompletedEl.style.display = "none"
+                }
+                tbltododiv.id = `todo div tr El ${todo.id}`
+                tbltododiv.style.display = 'none'
+            })
+        }
+        const maketitlefortodo = () => {
+            let tblPSEl = document.createElement('table')
+            let todoTrTitle = document.createElement('tr')
+            let todotdtitle = document.createElement('td')
+            let todotdtitleid = document.createElement('td')
+            let spacetd = document.createElement('td')
+            let todobtnAddtitle = document.createElement('td')
+            tableHostPSEl.appendChild(tblPSEl)
+            tblPSEl.appendChild(todoTrTitle)
+            todoTrTitle.appendChild(todotdtitle)
+            todoTrTitle.appendChild(todotdtitleid)
+            todoTrTitle.appendChild(spacetd)
+            todoTrTitle.appendChild(todobtnAddtitle)
+            todotdtitle.innerText = "Todos-user"
+            todobtnAddtitle.innerText = "Add"
+            tblPSEl.style.width = "700px"
+            tblPSEl.style.fontSize = "25px"
+            tblPSEl.style.height = "70px"
+            todotdtitle.style.textAlign = "center"
+            todotdtitle.style.width = "150px"
+            todotdtitle.style.height = "70px"
+            todotdtitleid.style.textAlign = "center"
+            todotdtitleid.style.width = "50px"
+            spacetd.style.width = "400px"
+            todobtnAddtitle.style.backgroundColor = "rgb(252, 209, 92)"
+            todobtnAddtitle.style.width = "150px"
+            tblPSEl.style.border = "none"
+            todotdtitle.style.border = "none"
+            todotdtitleid.style.border = "none"
+            spacetd.style.border = "none"
+            todobtnAddtitle.style.border = "none"
+            tblPSEl.style.display = 'none'
+            tblPSEl.id = 'tbl PS El'
+            todotdtitleid.id = 'todo td title id'
+            todobtnAddtitle.id = `todo btn Add title`
+            todobtnAddtitle.onclick = () => {
+                let newTodotblEl = document.getElementById(`new Todo tbl El`)
+                tblPSEl.style.display = 'none'
+                console.log("yes it's clicked")
+                Todos.forEach(todo => {
+                    let tododivtrEl = document.getElementById(`todo div tr El ${todo.id}`)
+                    tododivtrEl.style.display = 'none';
+                })
+                todobtnAddtitle.style.display = 'none';
+                newTodotblEl.style.display = 'block';
+            }
+        }
+        const maketablefornewtodo = () => {
+            let newTodotblEl = document.createElement('table')
+            let neWTodoTrEl = document.createElement('tr')
+            let neWTodoTdTitleEl = document.createElement('td')
+            let neWTodoTdTitleIdEl = document.createElement('td')
+            let neWTodospacetdEl = document.createElement('td')
+            neWTodospacetdEl.colSpan = "3"
+            tableHostPSEl.appendChild(newTodotblEl)
+            newTodotblEl.appendChild(neWTodoTrEl)
+            neWTodoTrEl.appendChild(neWTodoTdTitleEl)
+            neWTodoTrEl.appendChild(neWTodoTdTitleIdEl)
+            neWTodoTrEl.appendChild(neWTodospacetdEl)
+            neWTodoTdTitleEl.innerText = "New Todo - User"
+            let neWTodoTrTitle = document.createElement('tr')
+            let neWTodospace1tdEl = document.createElement('td')
+            let neWTodoTitleTextEl = document.createElement('td')
+            let neWTodoTitleEl = document.createElement('td')
+            let neWTodoInputTitleEl = document.createElement('input')
+            let neWTodospace2tdEl = document.createElement('td')
+            neWTodoInputTitleEl.type = "text"
+            neWTodoTitleEl.colSpan = "2"
+            newTodotblEl.appendChild(neWTodoTrTitle)
+            neWTodoTrTitle.appendChild(neWTodospace1tdEl)
+            neWTodoTrTitle.appendChild(neWTodoTitleTextEl)
+            neWTodoTrTitle.appendChild(neWTodoTitleEl)
+            neWTodoTitleEl.appendChild(neWTodoInputTitleEl)
+            neWTodoTrTitle.appendChild(neWTodospace2tdEl)
+            neWTodoTitleTextEl.innerText = "Title"
+            let neWTodoTrBtnEl = document.createElement('tr')
+            let neWTodospaceBtntdEl = document.createElement('td')
+            let neWTodoCancelBtnEl = document.createElement('td')
+            let neWTodoAddBtnEl = document.createElement('td')
+            neWTodospaceBtntdEl.colSpan = "3"
+            newTodotblEl.appendChild(neWTodoTrBtnEl)
+            neWTodoTrBtnEl.appendChild(neWTodospaceBtntdEl)
+            neWTodoTrBtnEl.appendChild(neWTodoCancelBtnEl)
+            neWTodoTrBtnEl.appendChild(neWTodoAddBtnEl)
+            neWTodoCancelBtnEl.innerText = "Cancel"
+            neWTodoAddBtnEl.innerText = "Add"
+            newTodotblEl.border = "1"
+            newTodotblEl.style.width = "700px"
+            newTodotblEl.style.height = "400px"
+            newTodotblEl.style.fontSize = "25px"
+            newTodotblEl.style.fontWeight = "bold"
+            neWTodoTrEl.style.height = "40px"
+            neWTodoTdTitleEl.style.textAlign = "center"
+            neWTodoTdTitleEl.style.width = "50px"
+            neWTodoTdTitleIdEl.style.textAlign = "right"
+            neWTodoTdTitleIdEl.style.width = "50px"
+            neWTodospacetdEl.style.width = "500px"
+            neWTodoTrTitle.style.width = "700px"
+            neWTodoTrTitle.style.height = "300px"
+            neWTodospace1tdEl.style.width = "200px"
+            neWTodoTitleTextEl.style.textAlign = "center"
+            neWTodoTitleTextEl.style.verticalAlign = "right"
+            neWTodoTitleTextEl.style.width = "150px"
+            neWTodoTitleTextEl.style.fontSize = "35px"
+            neWTodoTitleEl.style.textAlign = "left"
+            neWTodoTitleEl.style.width = "550px"
+            neWTodoInputTitleEl.style.height = "40px"
+            neWTodoInputTitleEl.style.width = "250px"
+            neWTodospace2tdEl.style.width = "100px"
+            neWTodospaceBtntdEl.style.width = "550px"
+            neWTodoCancelBtnEl.style.width = "70px"
+            neWTodoCancelBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            neWTodoAddBtnEl.style.width = "70px"
+            neWTodoAddBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            neWTodoTrEl.style.border = "none"
+            neWTodoTdTitleEl.style.border = "none"
+            neWTodoTdTitleIdEl.style.border = "none"
+            neWTodospacetdEl.style.border = "none"
+            neWTodoTrTitle.style.border = "none"
+            neWTodospace1tdEl.style.border = "none"
+            neWTodoTitleTextEl.style.border = "none"
+            neWTodoTitleEl.style.border = "none"
+            neWTodospace2tdEl.style.border = "none"
+            neWTodoTrBtnEl.style.border = "none"
+            neWTodospaceBtntdEl.style.border = "none"
+            neWTodoCancelBtnEl.style.border = "none"
+            neWTodoAddBtnEl.style.border = "none"
+            newTodotblEl.id = `new Todo tbl El`
+            newTodotblEl.style.display = 'none'
+            let todobtnAddtitle = document.getElementById(`todo btn Add title`)
+            let tblPSEl = document.getElementById(`tbl PS El`)
+            neWTodoCancelBtnEl.onclick = () => {
+                newTodotblEl.style.display = 'none'
+                todobtnAddtitle.style.display = 'block';
+                tblPSEl.style.display = 'block';
+                neWTodoInputTitleEl.value = ""
+                Todos.forEach(todo => {
+                    let tododivtrEl = document.getElementById(`todo div tr El ${todo.id}`)
+                    if (todo.userId == useridEl) {
+                        tododivtrEl.style.display = 'block';
+                    }
+                })
+            }
+            neWTodoAddBtnEl.onclick = () => {
+                newTodotblEl.style.display = 'none'
+                tblPSEl.style.display = 'block';
+                todobtnAddtitle.style.display = 'block';
+                console.log(neWTodoInputTitleEl.value)
+                let newtodo = {
+                    "userId": useridEl,
+                    "id": Todos.length + 1,
+                    "title": neWTodoInputTitleEl.value,
+                    "completed": true
+                }
+                Todos.push(newtodo)
+                neWTodoInputTitleEl.value = ""
+                tableHostPSEl.innerText = ""
+                maketitlefortodo()
+                maketablefornewtodo()
+                makeAtableforTodos()
+                maketitleforPost()
+                maketablefornewpost()
+                Posts.forEach(post => {
+                    makeAtblForPosts(post)
+                })
+                idElfunc(useridEl)
+            }
+        }
+        maketablefornewpost = () => {
+            let newPosttblEl = document.createElement('table')
+            let neWPostTrEl = document.createElement('tr')
+            let neWPostTdTitleEl = document.createElement('td')
+            let neWPostTdTitleIdEl = document.createElement('td')
+            let neWPostspacetdEl = document.createElement('td')
+            neWPostspacetdEl.colSpan = "3"
+            tableHostPSEl.appendChild(newPosttblEl)
+            newPosttblEl.appendChild(neWPostTrEl)
+            neWPostTrEl.appendChild(neWPostTdTitleEl)
+            neWPostTrEl.appendChild(neWPostTdTitleIdEl)
+            neWPostTrEl.appendChild(neWPostspacetdEl)
+            neWPostTdTitleEl.innerText = "New Post - User"
+            let neWPostTrTitle = document.createElement('tr')
+            let neWPostspace1tdEl = document.createElement('td')
+            let neWPostTitleTextEl = document.createElement('td')
+            let neWPostTitleEl = document.createElement('td')
+            let neWPostspace2tdEl = document.createElement('td')
+            let neWPostInputTitleEl = document.createElement('input')
+            neWPostInputTitleEl.type = "text"
+            neWPostspace1tdEl.colSpan = "2"
+            newPosttblEl.appendChild(neWPostTrTitle)
+            neWPostTrTitle.appendChild(neWPostspace1tdEl)
+            neWPostTrTitle.appendChild(neWPostTitleTextEl)
+            neWPostTrTitle.appendChild(neWPostTitleEl)
+            neWPostTitleEl.appendChild(neWPostInputTitleEl)
+            neWPostTitleTextEl.innerText = "Title"
+            let neWPostTrBody = document.createElement('tr')
+            let neWPostspace11tdEl = document.createElement('td')
+            let neWPostBodyTextEl = document.createElement('td')
+            let neWPostBodyEl = document.createElement('td')
+            let neWPostInputBodyEl = document.createElement('input')
+            let neWPostspace22tdEl = document.createElement('td')
+            neWPostInputBodyEl.type = "text"
+            neWPostspace11tdEl.colSpan = "2"
+            newPosttblEl.appendChild(neWPostTrBody)
+            neWPostTrBody.appendChild(neWPostspace11tdEl)
+            neWPostTrBody.appendChild(neWPostBodyTextEl)
+            neWPostTrBody.appendChild(neWPostBodyEl)
+            neWPostBodyEl.appendChild(neWPostInputBodyEl)
+            neWPostBodyTextEl.innerText = "Body"
+            let neWPostTrBtnEl = document.createElement('tr')
+            let neWPostspaceBtntdEl = document.createElement('td')
+            let neWPostCancelBtnEl = document.createElement('td')
+            let neWPostAddBtnEl = document.createElement('td')
+            neWPostspaceBtntdEl.colSpan = "4"
+            newPosttblEl.appendChild(neWPostTrBtnEl)
+            neWPostTrBtnEl.appendChild(neWPostspaceBtntdEl)
+            neWPostTrBtnEl.appendChild(neWPostCancelBtnEl)
+            neWPostTrBtnEl.appendChild(neWPostAddBtnEl)
+            neWPostCancelBtnEl.innerText = "Cancel"
+            neWPostAddBtnEl.innerText = "Add"
+            newPosttblEl.border = "1"
+            newPosttblEl.style.width = "700px"
+            newPosttblEl.style.height = "400px"
+            newPosttblEl.style.fontSize = "25px"
+            newPosttblEl.style.fontWeight = "bold"
+            neWPostTrEl.style.height = "40px"
+            neWPostTdTitleEl.style.textAlign = "center"
+            neWPostTdTitleEl.style.width = "200px"
+            neWPostTdTitleIdEl.style.textAlign = "right"
+            neWPostTdTitleIdEl.style.width = "80px"
+            neWPostspacetdEl.style.width = "400px"
+            neWPostTrTitle.style.width = "700px"
+            neWPostTrTitle.style.height = "100px"
+            neWPostspace1tdEl.style.width = "200px"
+            neWPostTitleTextEl.style.textAlign = "center"
+            neWPostTitleTextEl.style.verticalAlign = "right"
+            neWPostTitleTextEl.style.width = "80px"
+            neWPostTitleTextEl.style.fontSize = "35px"
+            neWPostTitleEl.style.textAlign = "left"
+            neWPostTitleEl.style.width = "200px"
+            neWPostInputTitleEl.style.height = "40px"
+            neWPostInputTitleEl.style.width = "210px"
+            neWPostspace2tdEl.style.width = "200px"
+            neWPostspace11tdEl.style.width = "200px"
+            neWPostBodyTextEl.style.width = "200px"
+            neWPostBodyTextEl.style.verticalAlign = "top"
+            neWPostBodyEl.style.verticalAlign = "top"
+            neWPostInputBodyEl.style.width = "200px"
+            neWPostInputBodyEl.style.height = "40px"
+            neWPostspaceBtntdEl.style.width = "600px"
+            neWPostspaceBtntdEl.style.height = "60px"
+            neWPostCancelBtnEl.style.width = "50px"
+            neWPostCancelBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            neWPostAddBtnEl.style.width = "50px"
+            neWPostAddBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            neWPostTrEl.style.border = "none"
+            neWPostTdTitleEl.style.border = "none"
+            neWPostTdTitleIdEl.style.border = "none"
+            neWPostspacetdEl.style.border = "none"
+            neWPostTrTitle.style.border = "none"
+            neWPostspace1tdEl.style.border = "none"
+            neWPostTitleTextEl.style.border = "none"
+            neWPostTitleEl.style.border = "none"
+            neWPostspace2tdEl.style.border = "none"
+            neWPostTrBody.style.border = "none"
+            neWPostspace11tdEl.style.border = "none"
+            neWPostBodyTextEl.style.border = "none"
+            neWPostBodyEl.style.border = "none"
+            neWPostspace22tdEl.style.border = "none"
+            neWPostTrBtnEl.style.border = "none"
+            neWPostspaceBtntdEl.style.border = "none"
+            neWPostCancelBtnEl.style.border = "none"
+            neWPostAddBtnEl.style.border = "none"
+            newPosttblEl.style.display = "none"
+            newPosttblEl.id = `new Post tbl El`
+            neWPostTdTitleIdEl.id = 'neW Post Td Title Id El'
+            let todobtnAddtitle = document.getElementById(`todo btn Add title`)
+            let tblPEl = document.getElementById(`tbl P El`)
+            let tblPSEl = document.getElementById(`tbl PS El`)
+            neWPostCancelBtnEl.onclick = () => {
+                newPosttblEl.style.display = 'none';
+                tblPEl.style.display = 'block';
+                tblPSEl.style.display = 'block';
+                neWPostInputTitleEl.value = ""
+                neWPostInputBodyEl.value = ""
+                Todos.forEach(todo => {
+                    let tododivtrEl = document.getElementById(`todo div tr El ${todo.id}`)
+                    if (todo.userId == useridEl) {
+                        tododivtrEl.style.display = 'block';
+                    }
+                })
+            }
+            neWPostAddBtnEl.onclick = () => {
+                newPosttblEl.style.display = 'none';
+                let newpost = {
+                    "userId": useridEl,
+                    "id": Posts.length + 1,
+                    "title": neWPostInputTitleEl.value,
+                    "body": neWPostInputBodyEl.value,
+                }
+                neWPostInputTitleEl.innerText = ""
+                Posts.push(newpost)
+                makeAtblForPosts(newpost)
+                idElfunc(useridEl)
+                neWPostInputTitleEl.value = ""
+                neWPostInputBodyEl.value = ""
+            }
+        }
+        const maketitleforPost = () => {
+            let tblPEl = document.createElement('table')
+            let postTrTitle = document.createElement('tr')
+            let postdtitle = document.createElement('td')
+            let posttdtitleid = document.createElement('td')
+            let spacetd = document.createElement('td')
+            let postbtnAddtitle = document.createElement('td')
+            // tblPEl.border = "1"
+            tableHostPSEl.appendChild(tblPEl)
+            tblPEl.appendChild(postTrTitle)
+            postTrTitle.appendChild(postdtitle)
+            postTrTitle.appendChild(posttdtitleid)
+            postTrTitle.appendChild(spacetd)
+            postTrTitle.appendChild(postbtnAddtitle)
+            postdtitle.innerText = "Posts-user"
+            postbtnAddtitle.innerText = "Add"
+            tblPEl.style.width = "700px"
+            tblPEl.style.fontSize = "25px"
+            tblPEl.style.height = "70px"
+            postdtitle.style.textAlign = "center"
+            postdtitle.style.width = "150px"
+            postdtitle.style.height = "70px"
+            posttdtitleid.style.textAlign = "center"
+            posttdtitleid.style.width = "50px"
+            spacetd.style.width = "400px"
+            postbtnAddtitle.style.backgroundColor = "rgb(252, 209, 92)"
+            postbtnAddtitle.style.width = "150px"
+            tblPEl.style.border = "none"
+            postdtitle.style.border = "none"
+            posttdtitleid.style.border = "none"
+            spacetd.style.border = "none"
+            tblPEl.style.display = 'none'
+            tblPEl.id = 'tbl P El'
+            posttdtitleid.id = 'post td title id'
+            let tblPSEl = document.getElementById(`tbl PS El`)
+            let newTodotblEl = document.getElementById('new Todo tbl El')
+            postbtnAddtitle.onclick = () => {
+                let neWPostTdTitleIdEl = document.getElementById('neW Post Td Title Id El')
+                let newPosttblEl = document.getElementById(`new Post tbl El`)
+                tblPSEl.style.display = 'none';
+                newTodotblEl.style.display = 'none';
+                neWPostTdTitleIdEl.innerText = useridEl
+                Todos.forEach(todo => {
+                    let tbltododiv = document.getElementById(`todo div tr El ${todo.id}`)
+                    tbltododiv.style.display = 'none';
+                })
+                tblPEl.style.display = 'none';
+                console.log(newPosttblEl)
+                newPosttblEl.style.display = "block"
+            }
+        }
+        const makeAtblForPosts = (post) => {
+            let Postdiv = document.createElement('div')
+            Postdiv.style.height = "200px"
+            Postdiv.style.fontSize = '15px'
+            Postdiv.style.borderStyle = "solid"
+            Postdiv.style.borderColor = "blueviolet"
+            Postdiv.style.width = "650px"
+            Postdiv.style.margin = "20px"
+            tableHostPSEl.appendChild(Postdiv)
+            let titlePtrEl = document.createElement('tr')
+            let titlePtextEl = document.createElement('td')
+            let titlePEl = document.createElement('td')
+            Postdiv.appendChild(titlePtrEl)
+            titlePtrEl.appendChild(titlePtextEl)
+            titlePtrEl.appendChild(titlePEl)
+            titlePtextEl.innerText = "Title :"
+            titlePEl.innerText = post.title
+            let BodytrEl = document.createElement('tr')
+            let BodyTextEl = document.createElement('td')
+            let BodyEl = document.createElement('td')
+            Postdiv.appendChild(BodytrEl)
+            BodytrEl.appendChild(BodyTextEl)
+            BodytrEl.appendChild(BodyEl)
+            BodyTextEl.innerText = `Body :`
+            BodyEl.innerText = post.body
+            titlePtrEl.style.border = "none"
+            titlePtextEl.style.border = "none"
+            titlePEl.style.border = "none"
+            BodytrEl.style.border = "none"
+            BodyTextEl.style.border = "none"
+            BodyEl.style.border = "none"
+            titlePtextEl.style.fontSize = "25px"
+            titlePtextEl.style.fontWeight = "900"
+            titlePtextEl.style.width = "200px"
+            titlePtextEl.style.height = "100px"
+            titlePEl.style.fontSize = "25px"
+            titlePEl.style.textAlign = "left"
+            titlePEl.style.width = "500px"
+            BodyTextEl.style.height = "100px"
+            BodyTextEl.style.fontSize = "25px"
+            BodytrEl.style.height = "50px"
+            BodyEl.style.textAlign = "left"
+            Postdiv.id = `Post div tr El ${post.id}`
+            Postdiv.style.display = 'none'
+        }
+        const Addnewuser = () => {
+            let tblPSEl = document.getElementById('tbl PS El')
+            tblPSEl.style.display = 'none'
+            let tblPEl = document.getElementById('tbl P El')
+            tblPEl.style.display = 'none';
+            Todos.forEach(todo => {
+                let tododivtrEl = document.getElementById(`todo div tr El ${todo.id}`)
+                tododivtrEl.style.display = 'none';
+            })
+            Posts.forEach(post => {
+                let Postdiv = document.getElementById(`Post div tr El ${post.id}`)
+                Postdiv.style.display = 'none';
+            })
+            let newuserTblEl = document.getElementById('new user Tbl El')
+            newuserTblEl.style.display = 'block'
+        }
+        const makeatablefornewuser = () => {
+            let newuserTblEl = document.createElement('table')
+            let newuserTrTitleEl = document.createElement('tr')
+            let newuserTdTitleEl = document.createElement('td')
+            newuserTblEl.border = "1"
+            tableHostnewuserEl.appendChild(newuserTblEl)
+            newuserTblEl.appendChild(newuserTrTitleEl)
+            newuserTrTitleEl.appendChild(newuserTdTitleEl)
+            newuserTdTitleEl.innerText = "Add New User"
+            let newuserTrNameEl = document.createElement('tr')
+            let newuserTextNameEl = document.createElement('td')
+            let newuserTdNameEl = document.createElement('td')
+            let newuserInputNameEl = document.createElement('input')
+            newuserInputNameEl.type = "text"
+            newuserTblEl.appendChild(newuserTrNameEl)
+            newuserTrNameEl.appendChild(newuserTextNameEl)
+            newuserTrNameEl.appendChild(newuserTdNameEl)
+            newuserTdNameEl.appendChild(newuserInputNameEl)
+            newuserTextNameEl.innerText = "Name"
+            let newuserTrEmailEl = document.createElement('tr')
+            let newuserTextEmailEl = document.createElement('td')
+            let newuserTdEmailEl = document.createElement('td')
+            let newuserInputEmailEl = document.createElement('input')
+            newuserInputEmailEl.type = "text"
+            newuserTblEl.appendChild(newuserTrEmailEl)
+            newuserTrEmailEl.appendChild(newuserTextEmailEl)
+            newuserTrEmailEl.appendChild(newuserTdEmailEl)
+            newuserTdEmailEl.appendChild(newuserInputEmailEl)
+            newuserTextEmailEl.innerText = "Email"
+            let newuserBtnTrEl = document.createElement('tr')
+            let newuserSpaceEl = document.createElement('td')
+            let newuserCancelBtnEl = document.createElement('td')
+            let newuserAddBtnEl = document.createElement('td')
+            newuserSpaceEl.colSpan = "2"
+            newuserTblEl.appendChild(newuserBtnTrEl)
+            newuserBtnTrEl.appendChild(newuserSpaceEl)
+            newuserBtnTrEl.appendChild(newuserCancelBtnEl)
+            newuserBtnTrEl.appendChild(newuserAddBtnEl)
+            newuserCancelBtnEl.innerText = "Cancel"
+            newuserAddBtnEl.innerText = "Add"
+            newuserTblEl.style.width = "700px"
+            newuserTblEl.style.height = "270px"
+            newuserTblEl.style.fontSize = "45px"
+            newuserTdTitleEl.style.height = "40px"
+            newuserTdTitleEl.style.fontWeight = "bolder"
+            newuserTextNameEl.style.height = "100px"
+            newuserTextNameEl.style.textAlign = "right"
+            newuserTextNameEl.style.verticalAlign = "bottom"
+            newuserTextNameEl.style.fontSize = "35px"
+            newuserTdNameEl.style.verticalAlign = "bottom"
+            newuserInputNameEl.style.height = "40px"
+            newuserTextEmailEl.style.height = "100px"
+            newuserTextEmailEl.style.textAlign = "right"
+            newuserTextEmailEl.style.verticalAlign = "top"
+            newuserTextEmailEl.style.fontSize = "35px"
+            newuserInputEmailEl.style.height = "40px"
+            newuserTdEmailEl.style.verticalAlign = "top"
+            newuserCancelBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            newuserCancelBtnEl.style.position = "relative"
+            newuserCancelBtnEl.style.bottom = "55px"
+            newuserAddBtnEl.style.backgroundColor = "rgb(252, 209, 92)"
+            newuserAddBtnEl.style.position = "relative"
+            newuserAddBtnEl.style.bottom = "55px"
+            newuserAddBtnEl.style.left = "15px"
+            newuserTdTitleEl.style.border = "none"
+            newuserTextNameEl.style.border = "none"
+            newuserTdNameEl.style.border = "none"
+            newuserTextEmailEl.style.border = "none"
+            newuserTdEmailEl.style.border = "none"
+            newuserSpaceEl.style.border = "none"
+            newuserTblEl.id = "new user Tbl El"
+            newuserTblEl.style.display = "none"
+            newuserCancelBtnEl.onclick = () => {
+                newuserTblEl.style.display = "none"
+            }
+            newuserAddBtnEl.onclick = () => {
+                let newuser = {
+                    "id": users.length + 1,
+                    "name": newuserInputNameEl.value,
+                    "email": newuserInputEmailEl.value,
+                    "address": {
+                        "street": "",
+                        "city": "",
+                        "zipcode": "",
+                    }
+                }
+                users.push(newuser)
+                creatEaTableForUser(newuser)
+                newuserTblEl.style.display = "none"
+            }
+        }
+        const creatEaTableForUser = (user) => {
+            let mydivtrEl = document.createElement('tr')
+            let mydivtdEl = document.createElement('td')
+            let mydiv = document.createElement('div')
+            tblEl.appendChild(mydivtrEl)
+            mydivtrEl.appendChild(mydivtdEl)
+            mydivtdEl.appendChild(mydiv)
+            let idtrEl = document.createElement('tr')
+            let idtextEl = document.createElement('td')
+            let idEl = document.createElement('td')
+            mydiv.appendChild(idtrEl)
+            idtrEl.appendChild(idtextEl)
+            idtrEl.appendChild(idEl)
+            idtextEl.innerText = "ID"
+            idEl.innerText = user.id
+            idEl.colSpan = "2"
+            let nametrEl = document.createElement('tr')
+            let nametextEl = document.createElement('td')
+            let nameEl = document.createElement('td')
+            let nameiputEl = document.createElement('input')
+            nameiputEl.type = "text"
+            mydiv.appendChild(nametrEl)
+            nametrEl.appendChild(nametextEl)
+            nametrEl.appendChild(nameEl)
+            nameEl.appendChild(nameiputEl)
+            nametextEl.innerText = "Name"
+            nameiputEl.value = user.name
+            nameEl.colSpan = "2"
+            let emailtrEl = document.createElement('tr')
+            let emailtextEl = document.createElement('td')
+            let emailEl = document.createElement('td')
+            let emailiputEl = document.createElement('input')
+            emailiputEl.type = "text"
+            mydiv.appendChild(emailtrEl)
+            emailtrEl.appendChild(emailtextEl)
+            emailtrEl.appendChild(emailEl)
+            emailEl.appendChild(emailiputEl)
+            emailtextEl.innerText = "Email"
+            emailiputEl.value = user.email
+            emailEl.colSpan = "2"
+            let buttontrEl = document.createElement('tr')
+            let OtherDataEl = document.createElement('td')
+            let UpdateEl = document.createElement('td')
+            let DeleteEl = document.createElement('td')
+            mydiv.appendChild(buttontrEl)
+            buttontrEl.appendChild(OtherDataEl)
+            buttontrEl.appendChild(UpdateEl)
+            buttontrEl.appendChild(DeleteEl)
+            OtherDataEl.innerText = "Other Data"
+            UpdateEl.innerText = "Update"
+            DeleteEl.innerText = "Delete"
+            OtherDataEl.style.fontSize = "larger"
+            OtherDataEl.style.fontWeight = "900"
+            OtherDataEl.style.height = "30px"
+            let mydiv1trEl = document.createElement('tr')
+            let mydiv1tdEl = document.createElement('td')
+            let mydiv1 = document.createElement('div')
+            mydiv1.id = "divid1"
+            tblEl.appendChild(mydiv1trEl)
+            mydiv1trEl.appendChild(mydiv1tdEl)
+            mydiv1tdEl.appendChild(mydiv1)
+            let StreetTrEl = document.createElement('tr')
+            let StreetTextEl = document.createElement('td')
+            let StreetEl = document.createElement('td')
+            let StreetiputEl = document.createElement('input')
+            StreetiputEl.type = "text"
+            mydiv1.appendChild(StreetTrEl)
+            StreetTrEl.appendChild(StreetTextEl)
+            StreetTrEl.appendChild(StreetEl)
+            StreetEl.appendChild(StreetiputEl)
+            StreetTextEl.innerText = "Street"
+            StreetiputEl.value = user.address.street
+            StreetEl.colSpan = "2"
+            let citytrEl = document.createElement('tr')
+            let citytextEl = document.createElement('td')
+            let cityEl = document.createElement('td')
+            let cityiputEl = document.createElement('input')
+            cityiputEl.type = "text"
+            mydiv1.appendChild(citytrEl)
+            citytrEl.appendChild(citytextEl)
+            citytrEl.appendChild(cityEl)
+            cityEl.appendChild(cityiputEl)
+            citytextEl.innerText = "City"
+            cityiputEl.value = user.address.city
+            cityEl.colSpan = "2"
+            let zipCodetrEl = document.createElement('tr')
+            let zipCodetextEl = document.createElement('td')
+            let zipCodeEl = document.createElement('td')
+            let zipCodeiputEl = document.createElement('input')
+            zipCodeiputEl.type = "text"
+            mydiv1.appendChild(zipCodetrEl)
+            zipCodetrEl.appendChild(zipCodetextEl)
+            zipCodetrEl.appendChild(zipCodeEl)
+            zipCodeEl.appendChild(zipCodeiputEl)
+            zipCodetextEl.innerText = "Zip Code"
+            zipCodeiputEl.value = user.address.zipcode
+            zipCodeEl.colSpan = "2"
+            let button1trEl = document.createElement('tr')
+            let SpaceEl = document.createElement('td')
+            let updateEl = document.createElement('td')
+            let deleteEl = document.createElement('td')
+            mydiv1.appendChild(button1trEl)
+            button1trEl.appendChild(SpaceEl)
+            button1trEl.appendChild(updateEl)
+            button1trEl.appendChild(deleteEl)
+            SpaceEl.innerText = ""
+            updateEl.innerText = "Update"
+            deleteEl.innerText = "Delete"
+            mydivtrEl.style.borderStyle = "solid"
+            mydivtrEl.style.borderColor = "red"
+            idtextEl.style.fontSize = "larger"
+            idtextEl.style.fontWeight = "900"
+            idtextEl.style.width = "100px"
+            idEl.style.fontSize = "medium"
+            nametextEl.style.fontSize = "larger"
+            nametextEl.style.fontWeight = "900"
+            nameiputEl.style.fontSize = "medium"
+            emailtextEl.style.fontSize = "larger"
+            emailtextEl.style.fontWeight = "900"
+            emailiputEl.style.fontSize = "medium"
+            UpdateEl.style.fontSize = "larger"
+            UpdateEl.style.fontWeight = "900"
+            DeleteEl.style.fontSize = "larger"
+            DeleteEl.style.fontWeight = "900"
+            mydiv1trEl.style.borderStyle = "solid"
+            mydiv1trEl.style.borderColor = "green"
+            StreetTextEl.style.fontSize = "larger"
+            StreetTextEl.style.fontWeight = "900"
+            StreetTextEl.style.width = "100px"
+            StreetiputEl.style.fontSize = "medium"
+            StreetEl.style.width = "200px"
+            citytextEl.style.fontSize = "larger"
+            citytextEl.style.fontWeight = "900"
+            cityiputEl.style.fontSize = "medium"
+            zipCodetextEl.style.fontSize = "larger"
+            zipCodetextEl.style.fontWeight = "900"
+            zipCodeiputEl.style.fontSize = "medium"
+            SpaceEl.style.fontSize = "larger"
+            SpaceEl.style.fontWeight = "900"
+            updateEl.style.fontSize = "larger"
+            updateEl.style.fontWeight = "900"
+            deleteEl.style.fontSize = "larger"
+            deleteEl.style.fontWeight = "900"
+            mydiv1trEl.style.display = 'none'
+            //first
+            idEl.id = `id El ${user.id}`
+            mydivtrEl.id = `my div tr El ${user.id}`
+            buttontrEl.id = `button tr El ${user.id}`
+            nameiputEl.id = `name iput El ${user.id}`
+            emailiputEl.id = `email iput El ${user.id}`
+            UpdateEl.id = `Update El${user.id}`
+            DeleteEl.id = `Delete El ${user.id}`
+            //Second
+            mydiv1trEl.id = `my div 1 tr El ${user.id}`
+            button1trEl.id = `button 1 tr El ${user.id}`
+            updateEl.id = `update El ${user.id}`
+            deleteEl.id = `delete El ${user.id}`
+            StreetiputEl.id = `Street iput El ${user.id}`
+            cityiputEl.id = `city iput El ${user.id}`
+            zipCodeiputEl.id = `zip Code iput El ${user.id}`
+            idEl.onclick = () => {
+                console.log(idEl)
+                users.forEach(user => {
+                    let mydivtrEl = document.getElementById(`my div tr El ${user.id}`)
+                    if (mydivtrEl.style.backgroundColor == "orange") {
+                        mydivtrEl.style.backgroundColor = "white"
+                    }
+                })
+                mydivtrEl.style.backgroundColor = "orange"
+                idElfunc(user.id)
+            }
+            OtherDataEl.onmouseover = () => {
+                CheckIfStreetAndCityOnScreen = true
+                UpdateEl.style.visibility = "hidden";
+                DeleteEl.style.visibility = "hidden";
+                mydiv1trEl.style.display = 'block'
+                OtherDataEl.onclick = () => {
+                    setTimeout(() => {
+                        UpdateEl.style.visibility = "visible";
+                        DeleteEl.style.visibility = "visible";
+                        mydiv1trEl.style.display = 'none'
+                    }, 1000)
+                }
+                updateEl.onclick = () => { Updatefunc(user.id) }
+                deleteEl.onclick = () => {
+                    console.log(`user.id ${user.id} deleted`)
+                    mydiv1trEl.remove()
+                    mydivtrEl.remove()
+                    for (let i = 0; i < users.length; i++) {
+                        if (users[i].id == user.id) {
+                            users.splice(i, 1)
+                        }
+                    }
+                }
+            }
+            UpdateEl.onclick = () => {
+                CheckIfStreetAndCityOnScreen = false
+                Updatefunc(user.id)
+            }
+            DeleteEl.onclick = () => {
+                console.log(`user.id ${user.id} deleted`)
+                mydiv1trEl.remove()
+                mydivtrEl.remove()
+                for (let i = 0; i < users.length; i++) {
+                    if (users[i].id == user.id) {
+                        users.splice(i, 1)
+                    }
+                }
+            }
+        }
+        const idElfunc = (id) => {
+            let tblPSEl = document.getElementById('tbl PS El')
+            tblPSEl.style.display = 'block';
+            let tblPEl = document.getElementById('tbl P El')
+            tblPEl.style.display = 'block';
+            let todotdtitleid = document.getElementById('todo td title id')
+            todotdtitleid.innerText = id
+            useridEl = id
+            let posttdtitleid = document.getElementById('post td title id')
+            posttdtitleid.innerText = id
+            Todos.forEach(todo => {
+                let tododivtrEl = document.getElementById(`todo div tr El ${todo.id}`)
+                if (todo.userId == id) {
+                    //console.log(tododivtrEl)
+                    tododivtrEl.style.display = 'block';
+                }
+                else {
+                    tododivtrEl.style.display = 'none';
+                }
+            })
+            Posts.forEach(post => {
+                let Postdiv = document.getElementById(`Post div tr El ${post.id}`)
+                if (post.userId == id) {
+                    // console.log(tododivtrEl)
+                    Postdiv.style.display = 'block';
+                } else {
+                    Postdiv.style.display = 'none';
+                }
+            })
+        }
+        const search = async () => {
+            let SearchVal = SearchEl.value
+            users.forEach(user => {
+                if ((user.name.indexOf(SearchVal) > -1) || (user.email.indexOf(SearchVal) > -1)) {
+                    document.getElementById(`my div tr El ${user.id}`).style.display = 'block'
+                    document.getElementById(`my div 1 tr El ${user.id}`).style.display = 'none'
+                } else {
+                    document.getElementById(`my div tr El ${user.id}`).style.display = 'none'
+                    document.getElementById(`my div 1 tr El ${user.id}`).style.display = 'none'
+                }
+            });
+            if (SearchVal.length == 0) {
+                users.forEach(user => {
+                    document.getElementById(`my div tr El ${user.id}`).style.display = 'block'
+                    document.getElementById(`my div 1 tr El ${user.id}`).style.display = 'none'
+                    document.getElementById(`Update El${user.id}`).style.visibility = 'visible'
+                    document.getElementById(`Delete El ${user.id}`).style.visibility = 'visible'
+                });
+            }
+        }
+        const Updatefunc = async (id) => {
+            if (CheckIfStreetAndCityOnScreen) {
+                let myUpdatebtnid = document.getElementById(`Update El ${id}`)
+                let nameVal = document.getElementById(`name iput El ${id}`).value
+                let emailVal = document.getElementById(`email iput El ${id}`).value
+                let streetVal = document.getElementById(`Street iput El ${id}`).value
+                let cityVal = document.getElementById(`city iput El ${id}`).value
+                let zipCodeVal = document.getElementById(`zip Code iput El ${id}`).value
+                var obj = { name: nameVal, email: emailVal, street: streetVal, city: cityVal, zipcode: zipCodeVal }
+            } else {
+                let nameVal = document.getElementById(`name iput El ${id}`).value
+                let emailVal = document.getElementById(`email iput El ${id}`).value
+                var obj = { name: nameVal, email: emailVal }
+            }
+            let fetchParams = {
+                method: "PUT",
+                body: JSON.stringify(obj),
+                headers: { "Content-type": "application/json" }
+            }
+            //sending request
+            const resp = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, fetchParams)
+            let status = await resp.json();
+            console.log(status);
+        }
+    </script>
+</body>
+
+</html>
